@@ -12,11 +12,14 @@ $custo = str_replace(',', '.',$_POST['custo']);  //money_format('%i', $_POST['cu
 
 
 
+
+
 //Dados do Formulário de Controle de Produção
 $nomeProduto = $_POST['nomeProduto'];
 $loteProducao = $_POST['loteProducao'];
 $dataProducao  = $_POST['dataProducao'];
 $tamanhoProducao = $_POST['tamanhoProducao'];
+ $quantidadeProducao = $_POST['quantidadeProducao'];
 
 //Dados do Formulário de Controle de Cliente
 $controleNomeCliente= $_POST['nomeCliente'];
@@ -63,6 +66,18 @@ if($_POST){
 }
 
 
+//Controle de pedido e entrega
+
+$pedidoCliente = $_POST['pedidoCliente'];
+$pedidoCompleto = $_POST['pedidoCompleto'];
+$pedidoTotal = $_POST['pedidoTotal'];
+$pedidoDesconto = $_POST['pedidoDesconto'];
+$pedidoValorFinal = $_POST['pedidoValorFinal'];
+
+if ($pedidoCompleto){
+  controlePedido($pedidoCliente, $pedidoCompleto, $pedidoTotal, $pedidoDesconto, $pedidoValorFinal);
+}
+
 
 //se receber dados do campo Pesquisa Cliente do Formulário de pedido execute a função
 if($pesquisarCliente){
@@ -77,7 +92,7 @@ if($modelo){
 
 //Se receber dados do campo lote de produção, acione a funcao de criar controle
 if($loteProducao){
-  controleProducao($nomeProduto, $loteProducao, $dataProducao, $tamanhoProducao);
+  controleProducao($nomeProduto, $loteProducao, $dataProducao, $tamanhoProducao, $quantidadeProducao);
 }
 
 //se receber dados do campo nomeCliente, acione a função controleCliente
@@ -130,7 +145,7 @@ function controleCliente($controleNomeCliente, $empresaCliente, $enderecoCliente
 
 //Função Controle de Produção
 
-function controleProducao($nomeProduto, $loteProducao, $dataProducao, $tamanhoProducao){
+function controleProducao($nomeProduto, $loteProducao, $dataProducao, $tamanhoProducao, $quantidadeProducao){
 
   try {
 
@@ -143,15 +158,15 @@ function controleProducao($nomeProduto, $loteProducao, $dataProducao, $tamanhoPr
   $dbh;
       // set the PDO error mode to exception
       $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-     $sql = "INSERT INTO controle_producao_tb (produto, lote, data_time, tamanho)
-     VALUES (:produto ,:lote ,:data_time ,:tamanho)";
+     $sql = "INSERT INTO controle_producao_tb (produto, lote, data_time, tamanho, quantidade)
+     VALUES (:produto ,:lote ,:data_time ,:tamanho, :quantidade)";
 
       $stmt = $dbh->prepare($sql);
       $stmt->bindParam(':produto', $nomeProduto);
       $stmt->bindParam(':lote', $loteProducao);
       $stmt->bindParam(':data_time', $dataProducao);
       $stmt->bindParam(':tamanho', $tamanhoProducao);
-
+      $stmt->bindParam(':quantidade', $quantidadeProducao);
 
       $stmt->execute();
 
@@ -216,11 +231,49 @@ function pesquisarCliente($pesquisarCliente){
 
 }
 
-function processarPedido($pedidoProduto, $pedidoTamanho, $pedidoQuantidade){
-  foreach($pedidoProduto as $produto){
-    echo $produto;
-    echo "<br>";
-  }
+
+function controlePedido ($pedidoCliente, $pedidoCompleto, $pedidoTotal, $pedidoDesconto, $pedidoValorFinal){
+    try {
+
+    require('db.php');
+    $statusPedido = "Encaminhado";
+    $servername;
+    $username;
+    $password;
+    $dbname;
+    $dbh;
+        // set the PDO error mode to exception
+       $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+       $sql = "INSERT INTO controle_pedido_tb (cliente, produto, total, desconto, valor_final, status)
+       VALUES (:cliente ,:produto ,:total ,:desconto ,:valor_final ,:status)";
+
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(':cliente', $pedidoCliente);
+        $stmt->bindParam(':produto', $pedidoCompleto);
+        $stmt->bindParam(':total', $pedidoTotal);
+        $stmt->bindParam(':desconto', $pedidoDesconto);
+        $stmt->bindParam(':valor_final', $pedidoValorFinal);
+        $stmt->bindParam(':status', $statusPedido);
+        $stmt->execute();
+
+    echo "Pedido adcionado!";
+
+        }
+    catch(PDOException $e)
+        {
+          echo $e->getMessage();
+        }
+    $dbh = null;
+
 }
+
+
+
+// function processarPedido($pedidoProduto, $pedidoTamanho, $pedidoQuantidade){
+//   foreach($pedidoProduto as $produto){
+//     echo $produto;
+//     echo "<br>";
+//   }
+// }
 
 ?>

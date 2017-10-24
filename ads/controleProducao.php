@@ -31,8 +31,8 @@ $dataProducao = date("Y-m-d H:i:s");
       <form id="controleProducao" action="./api/funcoes.php" method="post">
           <div class="form-group row">
             <div class="row">
-              <div class="col-xs-6 col-sm-3">
-              <label for="Modelo">Produto:</label>
+              <div class="col-xs-6 col-sm-2">
+              <label for="Modelo">Produto / Código:</label>
               <input name='nomeProduto' class="auto ui-autocomplete-input form-control" autocomplete="off" aria-describedby="sizing-addon1">
               </div>
               <div class="col-xs-6 col-sm-2">
@@ -46,6 +46,10 @@ $dataProducao = date("Y-m-d H:i:s");
               <div class="col-xs-6 col-sm-1">
                <label for="tamanhoProducao">Tamanho</label>
               <input name="tamanhoProducao" type="text"  class="form-control" value="<?php echo $tamanhoProducao; ?>" aria-describedby="sizing-addon1">
+              </div>
+              <div class="col-xs-6 col-sm-1">
+               <label for="quantidadeProducao">Quantidade</label>
+              <input name="quantidadeProducao" type="text"  class="form-control" value="<?php echo $quantidadeProducao; ?>" aria-describedby="sizing-addon1">
               </div>
               <div class="col-xs-6 col-sm-3">
               <label for="btProduzir">Ação</label><br>

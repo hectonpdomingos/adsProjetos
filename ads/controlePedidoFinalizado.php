@@ -33,7 +33,8 @@ $telefoneCliente = $_POST['telefoneCliente'];
    <div class="col-md-12">
        <div class="panel panel-default">
            <div class="panel-heading">
-               <h3 class="panel-title"><strong>Pedido</strong> #232332 <strong>Cliente: </strong><?php echo $nomeCliente; ?> <strong>Endereço: </strong> <?php echo $enderecoCliente; ?>
+               <h3 class="panel-title"><strong>Pedido</strong> #232332 <strong>Cliente: </strong>
+                <?php echo $nomeCliente; ?> <strong>Endereço: </strong> <?php echo $enderecoCliente;?>
                 <strong>Telefone: </strong> <?php echo $telefoneCliente; ?></h3>
 
            </div>
@@ -52,22 +53,28 @@ $telefoneCliente = $_POST['telefoneCliente'];
                        <tbody>
 
 <?php
-
+$numeroItem;
 //soma de todas os valores
 $soma;
 //soma de todos so itens
 $somaConjuntoItens;
 
+$pedidoCompleto;
 
 if($_POST){
     $field_values_array = array_filter($_POST['field_name']);
     if($field_values_array){
         foreach ($field_values_array as $value){
+          //contator de itens
+          $numeroItem = $numeroItem +1;
           //mudando o separador decimal para ponto
           $quantidade = str_replace(',', '.', $value[2]);
           $valor = str_replace(',', '.', $value[3]);
 
+          //variavel com todos os itens para db
+          $pedidoCompleto = $pedidoCompleto ."Item: ". $numeroItem . " Produto: " . $value[0] . " Tamanho: " . $value[1] . " Qtd: " . $value[2] . " Valor Unitário: " . $value[3] . "<br>";
 
+          //soma dos valores dos conjuntos de itens
           $somaConjuntoItens =   $quantidade * $valor ;
           $soma = $soma + $somaConjuntoItens;
 
@@ -116,17 +123,22 @@ $valorFinal = $soma - $desconto;
                            </tr>
                        </tbody>
                    </table>
+
+                   <form name="finalizarPedido" action="./api/funcoes.php" method="post">
+                    <input hidden="true "name="pedidoCliente" value='<?php echo "Cliente: " . $nomeCliente . " | " ." Ender: " .$enderecoCliente . " | " ." Tel:". $telefoneCliente; ?>'>
+                    <input hidden="true "name="pedidoCompleto" value='<?php echo $pedidoCompleto; ?>'>
+                    <input hidden="true "name="pedidoTotal" value='<?php echo $soma; ?>'>
+                    <input hidden="true "name="pedidoDesconto" value='<?php echo $desconto; ?>'>
+                    <input hidden="true "name="pedidoValorFinal" value='<?php echo $valorFinal; ?>'>
+                    <button class="bt bt-default" type="submit" name="btSubmitPedido">Finalizar Pedido</button>
+                   </form>
+
                </div>
            </div>
        </div>
    </div>
 </div>
 </div>
-
-
-
-
-
 
   </div> <!--fim da div container -->
 </div> <!-- fim da div jumbotron -->
